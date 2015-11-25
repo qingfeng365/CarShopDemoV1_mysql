@@ -1,0 +1,45 @@
+{
+  "name": "carshop-demo",
+  "version": "1.0.0",
+  "description": "基于mysql, Express, Node架构的汽车商城开发示例",
+  "main": "server/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git https://github.com/qingfeng365/CarShopDemoV1.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/qingfeng365/CarShopDemoV1/issues"
+  },
+  "homepage": "https://github.com/qingfeng365/CarShopDemoV1#readme",
+  "dependencies": {
+    "bcryptjs": "^2.3.0",
+    "body-parser": "^1.14.1",
+    "connect-mongo": "^0.8.2",
+    "connect-session-knex": "^1.0.17",
+    "errorhandler": "^1.4.2",
+    "express": "^4.13.3",
+    "express-session": "^1.11.3",
+    "jade": "^1.11.0",
+    "knex": "^0.9.0",
+    "moment": "^2.10.6",
+    "mongoose": "^4.1.10",
+    "morgan": "^1.6.1",
+    "mysql": "^2.9.0",
+    "sequelize": "^3.14.1",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.9.11",
+    "express-debug": "^1.1.1",
+    "gulp": "^3.9.0",
+    "gulp-jshint": "^1.11.2",
+    "gulp-nodemon": "^2.0.4",
+    "jshint-stylish": "^2.0.1",
+    "xmlhttprequest": "^1.8.0"
+  }
+}
