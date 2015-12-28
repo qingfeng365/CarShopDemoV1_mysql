@@ -10,10 +10,11 @@ module.exports = function(app) {
   app.use(function(req, res, next) {
     var _user = req.session.loginuser;
     res.locals.loginuser = _user;
-    next();
+    return next();
   });
 
   app.get('/', indexController.index);
+
   app.get('/car/:id', carController.showDetail);
 
   app.get('/admin/car/list', userController.requireSignin, userController.requireAdmin, carController.showList);
@@ -35,4 +36,5 @@ module.exports = function(app) {
   app.get('/logout', userController.logout);
 
   app.post('/car/comment', userController.requireSignin, commentController.post);
+
 };

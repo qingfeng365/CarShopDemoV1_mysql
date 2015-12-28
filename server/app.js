@@ -30,6 +30,9 @@ app.use(session({
   })
 }));
 
+// var sequelizeService = require('./sequelizeService');
+
+
 app.use(express.static(path.join(__dirname, '../client')));
 
 app.locals.moment = require('moment');
