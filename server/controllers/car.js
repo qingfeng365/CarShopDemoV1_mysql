@@ -1,7 +1,7 @@
 'use strict';
 var _ = require('underscore');
-var ModelCar = require('../models/car');
-var ModelComment = require('../models/comment');
+// var ModelCar = require('../models/car');
+// var ModelComment = require('../models/comment');
 
 var sequelizeService = require('../sequelizeService');
 var Car = sequelizeService.models.Car;
@@ -32,9 +32,9 @@ module.exports.showDetail = function (req, res, next) {
   Car.findById(id)
     .then(function (_car) {
       car = _car;
-      return Comment.fetchByCarId(id,sequelizeService.models);
+      return Comment.fetchByCarId(id);
     })
-    .then(function(_comments){
+    .then(function (_comments) {
       comments = _comments;
       // console.dir(comments);
       return res.render('car_detail', {
@@ -52,7 +52,7 @@ module.exports.showDetail = function (req, res, next) {
 // admin/car/list?page=&pagetotal=&search=
 module.exports.showList = function (req, res, next) {
 
-  var size = 2;
+  var size = 6;
   var page = parseInt(req.query.page);
   var pagetotal = parseInt(req.query.pagetotal);
   var search = req.query.search;
@@ -65,15 +65,50 @@ module.exports.showList = function (req, res, next) {
   }
 
 
+  // if (!page) {
+  //   //第一次调用
+  //   ModelCar.getCount(search, function (err, totalsize) {
+  //     page = 1;
+  //     pagetotal = Math.ceil(totalsize / size);
+  //     ModelCar.findByPage(search, page, size, function (err, cars) {
+  //       if (err) {
+  //         return next(err);
+  //       }
+  //       res.render('car_list.jade', {
+  //         title: '汽车商城 列表页',
+  //         cars: cars,
+  //         page: page,
+  //         size: size,
+  //         pagetotal: pagetotal,
+  //         searchquery: searchquery
+  //       });
+  //     });
+  //   });
+  // } else {
+  //   ModelCar.findByPage(search, page, size, function (err, cars) {
+  //     if (err) {
+  //       return next(err);
+  //     }
+  //     res.render('car_list.jade', {
+  //       title: '汽车商城 列表页',
+  //       cars: cars,
+  //       page: page,
+  //       size: size,
+  //       pagetotal: pagetotal,
+  //       searchquery: searchquery
+  //     });
+  //   });
+  // }
+
   if (!page) {
     //第一次调用
-    ModelCar.getCount(search, function (err, totalsize) {
-      page = 1;
-      pagetotal = Math.ceil(totalsize / size);
-      ModelCar.findByPage(search, page, size, function (err, cars) {
-        if (err) {
-          return next(err);
-        }
+    Car.getCount(search)
+      .then(function (totalsize) {
+        page = 1;
+        pagetotal = Math.ceil(totalsize / size);
+        return Car.findByPage(search, page, size);
+      })
+      .then(function (cars) {
         res.render('car_list.jade', {
           title: '汽车商城 列表页',
           cars: cars,
@@ -82,23 +117,28 @@ module.exports.showList = function (req, res, next) {
           pagetotal: pagetotal,
           searchquery: searchquery
         });
-      });
-    });
-  } else {
-    ModelCar.findByPage(search, page, size, function (err, cars) {
-      if (err) {
+      })
+      .error(function (err) {
         return next(err);
-      }
-      res.render('car_list.jade', {
-        title: '汽车商城 列表页',
-        cars: cars,
-        page: page,
-        size: size,
-        pagetotal: pagetotal,
-        searchquery: searchquery
       });
-    });
+  } else {
+    Car.findByPage(search, page, size)
+      .then(function (cars) {
+        res.render('car_list.jade', {
+            title: '汽车商城 列表页',
+            cars: cars,
+            page: page,
+            size: size,
+            pagetotal: pagetotal,
+            searchquery: searchquery
+          })
+          .error(function (err) {
+            return next(err);
+          });
+      });
   }
+
+
 };
 
 module.exports.search = function (req, res, next) {
@@ -117,70 +157,124 @@ module.exports.new = function (req, res, next) {
 };
 module.exports.update = function (req, res, next) {
   var id = req.params.id;
-  ModelCar.findById(id, function (err, car) {
-    if (err) {
+  // ModelCar.findById(id, function (err, car) {
+  //   if (err) {
+  //     return next(err);
+  //   }
+  //   res.render('car_admin', {
+  //     title: '汽车商城 后台录入页',
+  //     car: car
+  //   });
+  // });
+
+  Car.findById(id)
+    .then(function (car) {
+      return res.render('car_admin', {
+        title: '汽车商城 后台录入页',
+        car: car
+      });
+    })
+    .error(function (err) {
       return next(err);
-    }
-    res.render('car_admin', {
-      title: '汽车商城 后台录入页',
-      car: car
     });
-  });
+
 };
 module.exports.post = function (req, res, next) {
   var carObj = req.body.car;
   if (!carObj) {
     return res.status(400).send('找不到合法数据.');
   }
-  var id = carObj._id;
+  var id = carObj.id;
+
+  // if (!id) {
+  //   //新增
+  //   var docCar = new ModelCar(carObj);
+  //   docCar.save(function (err, _car) {
+  //     if (err) {
+  //       return next(err);
+  //     }
+  //     return res.redirect('/car/' + _car._id);
+  //   });
+  // } else {
+  //   //修改 方案一
+  //   // ModelCar.findByIdAndUpdate(id, carObj, function(err, _car) {
+  //   //   if (err) {
+  //   //     return next(err);
+  //   //   }
+  //   //   return res.redirect('/car/' + id);
+  //   // });
+
+  //   //修改 方案二
+  //   ModelCar.findById(id, function (err, docCar) {
+  //     if (err) {
+  //       return next(err);
+  //     }
+  //     docCar = _.extend(docCar, carObj);
+  //     docCar.save(function (err, _car) {
+  //       if (err) {
+  //         return next(err);
+  //       }
+  //       return res.redirect('/car/' + _car._id);
+  //     });
+  //   });
+  // }
+
   if (!id) {
     //新增
-    var docCar = new ModelCar(carObj);
-    docCar.save(function (err, _car) {
-      if (err) {
+    Car.build(carObj)
+      .save()
+      .then(function (_car) {
+        return res.redirect('/car/' + _car.id);
+      })
+      .error(function (err) {
         return next(err);
-      }
-      return res.redirect('/car/' + _car._id);
-    });
-  } else {
-    //修改 方案一
-    // ModelCar.findByIdAndUpdate(id, carObj, function(err, _car) {
-    //   if (err) {
-    //     return next(err);
-    //   }
-    //   return res.redirect('/car/' + id);
-    // });
-
-    //修改 方案二
-    ModelCar.findById(id, function (err, docCar) {
-      if (err) {
-        return next(err);
-      }
-      docCar = _.extend(docCar, carObj);
-      docCar.save(function (err, _car) {
-        if (err) {
-          return next(err);
-        }
-        return res.redirect('/car/' + _car._id);
       });
-    });
+  } else {
+    Car.findById(id)
+      .then(function (_car) {
+        _car = _.extend(_car, carObj);
+        return _car.save();
+      })
+      .then(function (_car) {
+        return res.redirect('/car/' + _car.id);
+      })
+      .error(function (err) {
+        return next(err);
+      });
   }
 };
 module.exports.del = function (req, res, next) {
   var id = req.query.id;
   if (id) {
-    ModelCar.findByIdAndRemove(id, function (err, _car) {
-      if (err) {
-        res.status(500).json({
-          ok: 0
-        });
-        return next(err);
-      } else {
+    // ModelCar.findByIdAndRemove(id, function (err, _car) {
+    //   if (err) {
+    //     res.status(500).json({
+    //       ok: 0
+    //     });
+    //     return next(err);
+    //   } else {
+    //     res.json({
+    //       ok: 1
+    //     });
+    //   }
+    // });
+
+    Car.destroy({
+        where: {
+          id: id
+        }
+      })
+      .then(function (row) {
         res.json({
           ok: 1
         });
-      }
-    });
+      })
+      .error(function (err) {
+        res.status(500).json({
+          ok: 0
+        });
+      });
+
   } else {
     res.json({
       ok: 0

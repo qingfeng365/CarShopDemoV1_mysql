@@ -20,14 +20,13 @@ sequelizeService.sequelize
     });
 
     join(getCar, getUser, function(car, user) {
-
       var buildPromiseArray = [];
 
       buildPromiseArray.push(
         Promise.resolve(Comment.build({
           content: '这是评论1....',
         })).then(function(comment) {
-          join(comment.setCar(car, {
+          return join(comment.setCar(car, {
               save: false
             }),
             comment.setFrom(user, {
@@ -45,7 +44,7 @@ sequelizeService.sequelize
         Promise.resolve(Comment.build({
           content: '这是评论2....',
         })).then(function(comment) {
-          join(comment.setCar(car, {
+          return join(comment.setCar(car, {
               save: false
             }),
             comment.setFrom(user, {
@@ -63,7 +62,7 @@ sequelizeService.sequelize
         Promise.resolve(Comment.build({
           content: '这是评论3....',
         })).then(function(comment) {
-          join(comment.setCar(car, {
+          return  join(comment.setCar(car, {
               save: false
             }),
             comment.setFrom(user, {
@@ -79,7 +78,7 @@ sequelizeService.sequelize
 
       Promise.all(buildPromiseArray)
         .then(function() {
-          console.log('新增 %d 条记录', buildPromiseArray.length);
+          console.log('新增 %d 条记录...', buildPromiseArray.length);
         })
         .error(function(err) {
           console.log(err);

@@ -17,7 +17,8 @@ module.exports = function (sequelize, DataTypes) {
         });
         Comment.hasMany(models.Reply);
       },
-      fetchByCarId: function (carId, models) {
+      fetchByCarId: function (carId) {
+        // console.dir(this);
         return this
           .findAll({
             include: [{
@@ -27,11 +28,9 @@ module.exports = function (sequelize, DataTypes) {
               },
               attributes: []
             }, {
-              association: this.associations.Replies
-            }, {
-              association: this.associations.From
+              all: true, nested: true
             }],
-            order: ['createdAt']
+            order: ['createdAt','id','Replies.id']
           });
 
       },

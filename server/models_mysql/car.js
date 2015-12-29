@@ -1,7 +1,7 @@
 'use strict';
 var _ = require('underscore');
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
   var Car = sequelize.define('Car', {
     proTitle: DataTypes.STRING,
     brand: DataTypes.STRING,
@@ -19,18 +19,18 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: 0
     }
   }, {
-    charset:'utf8',
+    charset: 'utf8',
     classMethods: {
-      associate: function(models) {
+      associate: function (models) {
 
       },
-      fetch: function(op) {
+      fetch: function (op) {
         return this
           .findAll(_.extend({
             order: ['createdAt']
           }, op || {}));
       },
-      getCount: function(s) {
+      getCount: function (s) {
         if (s) {
           return this
             .count({
@@ -59,8 +59,8 @@ module.exports = function(sequelize, DataTypes) {
             .count();
         }
       },
-      findByPage: function(s, page, size) {
-        if(s){
+      findByPage: function (s, page, size) {
+        if (s) {
           return this
             .findAll({
               where: {
@@ -83,15 +83,15 @@ module.exports = function(sequelize, DataTypes) {
                 }]
               },
               order: ['createdAt'],
-               offset: (page - 1) * size, 
-               limit: size
+              offset: (page - 1) * size,
+              limit: size
             });
-        }else{
+        } else {
           return this
             .findAll({
               order: ['createdAt'],
-               offset: (page - 1) * size, 
-               limit: size
+              offset: (page - 1) * size,
+              limit: size
             });
         }
       }

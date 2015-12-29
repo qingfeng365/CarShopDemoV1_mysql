@@ -67,11 +67,9 @@ module.exports = function(sequelize, DataTypes) {
     },
     hooks: {
       beforeCreate: function(user, options) {
-        console.log('beforeCreate......');
         return encodePassword(user);
       },
       beforeUpdate: function(user, options) {
-        console.log('beforeUpdate......');
         return encodePassword(user);
       },
     }
