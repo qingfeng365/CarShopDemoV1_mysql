@@ -18,7 +18,7 @@ module.exports = function (sequelize, DataTypes) {
         Comment.hasMany(models.Reply);
       },
       fetchByCarId: function (carId) {
-        // console.dir(this);
+        console.log('fetchByCarId');
         return this
           .findAll({
             include: [{

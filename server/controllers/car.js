@@ -35,6 +35,7 @@ module.exports.showDetail = function (req, res, next) {
       return Comment.fetchByCarId(id);
     })
     .then(function (_comments) {
+
       comments = _comments;
       // console.dir(comments);
       return res.render('car_detail', {
@@ -44,6 +45,7 @@ module.exports.showDetail = function (req, res, next) {
       });
     })
     .error(function (err) {
+      console.log(err);
       return next(err);
     });
 };
@@ -52,7 +54,7 @@ module.exports.showDetail = function (req, res, next) {
 // admin/car/list?page=&pagetotal=&search=
 module.exports.showList = function (req, res, next) {
 
-  var size = 6;
+  var size = 2;
   var page = parseInt(req.query.page);
   var pagetotal = parseInt(req.query.pagetotal);
   var search = req.query.search;
@@ -124,18 +126,19 @@ module.exports.showList = function (req, res, next) {
   } else {
     Car.findByPage(search, page, size)
       .then(function (cars) {
-        res.render('car_list.jade', {
-            title: '汽车商城 列表页',
-            cars: cars,
-            page: page,
-            size: size,
-            pagetotal: pagetotal,
-            searchquery: searchquery
-          })
-          .error(function (err) {
-            return next(err);
-          });
-      });
+        return res.render('car_list.jade', {
+          title: '汽车商城 列表页',
+          cars: cars,
+          page: page,
+          size: size,
+          pagetotal: pagetotal,
+          searchquery: searchquery
+        });
+
+      })
+      .error(function (err) {
+        return next(err);
+      });;
   }
 
 
